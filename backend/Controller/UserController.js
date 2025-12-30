@@ -33,7 +33,8 @@ const loginUser = async (req, res) => {
     if (!user) return res.status(404).json({ message: "Invalid email" });
 
     const matched = await bcrypt.compare(password, user.password);
-    if (!matched) return res.status(400).json({ message: "incorrect Password" });
+    if (!matched)
+      return res.status(400).json({ message: "incorrect Password" });
 
     const token = jwt.sign(
       { id: user._id, role: user.role },
@@ -51,6 +52,5 @@ const loginUser = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-
 
 export { registerUser, loginUser };
