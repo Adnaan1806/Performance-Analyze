@@ -52,4 +52,38 @@ const getDailyLogs = async (req, res) => {
   }
 };
 
-export { addDailyLog, getDailyLogs };
+const updateDailyLog = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { tasks, learnings, challenges } = req.body;
+
+    const log = await DailyLog.findOne({ _id: id, userId: req.user._id });
+
+    if (!log) {
+      return res.status(404).json({ message: "Log not found or unauthorized" });
+    }
+
+    // only allow edit if pending or rejected
+    if (!["pending", "rejected"].includes(log.status)) {
+      return res
+        .status(400)
+        .json({ message: "Cannot edit. Log already reviewed." });
+    }
+
+    log.tasks = tasks;
+    log.learnings = learnings;
+    log.challenges = challenges;
+    log.status = "pending";
+    await log.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Daily log updated successfully",
+      log,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export { addDailyLog, getDailyLogs, updateDailyLog };
