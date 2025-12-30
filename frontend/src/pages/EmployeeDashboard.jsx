@@ -1,8 +1,12 @@
 import React from 'react'
+import DailyLog from './DailyLog'
 
 const EmployeeDashboard = () => {
   return (
-    <div>EmployeeDashboard</div>
+    <div>
+      <h1>Employee Dashboard</h1>
+      <DailyLog />
+    </div>
   )
 }
 

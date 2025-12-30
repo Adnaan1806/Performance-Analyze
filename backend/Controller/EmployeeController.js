@@ -40,7 +40,7 @@ const getDailyLogs = async (req, res) => {
       .populate("approvedBy", "name email")
       .sort({
         logDate: -1,
-      }); // newest first
+      });
 
     res.status(200).json({
       success: true,
