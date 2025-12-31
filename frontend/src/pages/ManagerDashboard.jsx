@@ -1,8 +1,11 @@
 import React from 'react'
+import ManagerReview from './ManagerReview'
 
 const ManagerDashboard = () => {
   return (
-    <div>ManagerDashboard</div>
+    <div>
+      <ManagerReview />
+    </div>
   )
 }
 
