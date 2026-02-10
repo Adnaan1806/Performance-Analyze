@@ -1,6 +1,10 @@
 import { ArrowLeft, User, Calendar, TrendingUp } from "lucide-react";
 import ProductivityChart from "../components/ProductivityChart";
 import ConsistencyChart from "../components/ConsistencyChart";
+import Stability from "../components/StabilityChart";
+import BISGauge from "../components/BISGauge";
+import InsightsTable from "../components/InsightsTable";
+import RadarMetrics from "../components/RadarMetrics";
 
 const ReviewAnalytics = ({ analysisData, onBackToAnalysis }) => {
   // Show placeholder if no data
@@ -117,6 +121,17 @@ const ReviewAnalytics = ({ analysisData, onBackToAnalysis }) => {
           pre={bisResult.Const_Before}
           post={bisResult.Const_After}
         />
+
+        <Stability
+          pre={bisResult.Stability_Before}
+          post={bisResult.Stability_After}
+        />
+
+        <BISGauge score={bisResult.BIS} />
+
+        <InsightsTable res={bisResult} />
+
+        <RadarMetrics result={bisResult} />
       </div>
 
       {/* Metric Definitions */}
