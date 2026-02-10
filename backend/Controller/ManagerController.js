@@ -68,4 +68,87 @@ const rejectLog = async (req, res) => {
   }
 };
 
-export { getPendingLogs, approveLog, rejectLog };
+const getAllEmployees = async (req, res) => {
+  try {
+    const employees = await User.find({ role: "Employee" })
+      .select("name email _id");
+
+    return res.status(200).json({
+      success: true,
+      employees,
+    });
+
+  } catch (error) {
+    console.error("Error fetching employees:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch employees",
+    });
+  }
+};
+
+const getLogsForManager = async (req, res) => {
+  try {
+    const { employeeId } = req.query;
+
+    // If a specific employee is selected
+    const query = employeeId ? { userId: employeeId } : {};
+
+    const logs = await DailyLog.find(query)
+      .populate("userId", "name email")
+      .sort({ logDate: -1 });
+
+    return res.status(200).json({ success: true, logs });
+
+  } catch (error) {
+    return res.status(500).json({ success: false, message: "Failed to fetch logs" });
+  }
+};
+
+ const getLogStats = async (req, res) => {
+  try {
+    const pending = await DailyLog.countDocuments({ status: "pending" });
+    const approved = await DailyLog.countDocuments({ status: "approved" });
+    const rejected = await DailyLog.countDocuments({ status: "rejected" });
+
+    res.status(200).json({
+      success: true,
+      stats: { pending, approved, rejected },
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+const filterApprovedLogs = async (req, res) => {
+  try {
+    const { employeeId, start, end } = req.query;
+
+    // Validate required fields
+    if (!employeeId || !start || !end) {
+      return res.status(400).json({ 
+        success: false,
+        message: "employeeId, start date, and end date are required" 
+      });
+    }
+
+    const logs = await DailyLog.find({
+      userId: employeeId,
+      status: "approved",
+      logDate: { $gte: new Date(start), $lte: new Date(end) }
+    })
+    .populate("userId", "name email")
+    .sort({ logDate: 1 });
+
+    return res.status(200).json({ success: true, logs });
+
+  } catch (error) {
+    console.error("Error filtering logs:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error"
+    });
+  }
+};
+
+export { getPendingLogs, approveLog, rejectLog, getAllEmployees, getLogStats, getLogsForManager, filterApprovedLogs };
