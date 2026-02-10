@@ -1,16 +1,24 @@
 import { useContext, useState } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { Button } from "@/components/ui/button";
+import ReviewAnalytics from "./ReviewAnalytics";
 import ManagerReview from "./ManagerReview";
+import ManagerBISAnalysis from "./ManagerBISAnalysis";
 import { BarChart2, Star, Settings } from "@/components/ui/icons";
 
 const ManagerDashboard = () => {
   const { logout } = useContext(AuthContext);
   const [activeTab, setActiveTab] = useState("reviews");
+  const [analysisData, setAnalysisData] = useState(null);
 
   const handleLogout = () => {
     logout();
     window.location.href = "/";
+  };
+
+  const handleAnalysisComplete = (data) => {
+    setAnalysisData(data);
+    setActiveTab("analytics"); // Switch to analytics tab
   };
 
   const user = localStorage.getItem("user");
@@ -20,6 +28,7 @@ const ManagerDashboard = () => {
   const tabs = [
     { id: "reviews", label: "Log Review", icon: <Star /> },
     { id: "settings", label: "BIS Comparison", icon: <Settings /> },
+    { id: "analytics", label: "Performance Insights", icon: <BarChart2 /> },
   ];
 
   return (
@@ -79,6 +88,16 @@ const ManagerDashboard = () => {
         {/* Content */}
         <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-8">
           {activeTab === "reviews" && <ManagerReview />}
+          {activeTab === "analytics" && (
+            <ReviewAnalytics
+              analysisData={analysisData}
+              onBackToAnalysis={() => setActiveTab("settings")}
+            />
+          )}
+
+          {activeTab === "settings" && (
+            <ManagerBISAnalysis onAnalysisComplete={handleAnalysisComplete} />
+          )}
         </div>
       </div>
     </div>
