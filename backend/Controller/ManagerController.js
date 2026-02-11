@@ -1,4 +1,5 @@
 import DailyLog from "../Models/DailyLog.js";
+import User from "../Models/UserModel.js";
 
 const getPendingLogs = async (req, res) => {
   try {
