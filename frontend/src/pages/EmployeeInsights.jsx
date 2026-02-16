@@ -10,9 +10,7 @@ import {
   Area,
   AreaChart,
 } from "recharts";
-import {
-  TrendingUp
-} from "lucide-react";
+import { TrendingUp } from "lucide-react";
 
 const API = axios.create({
   baseURL: "http://localhost:4000/api",
@@ -42,7 +40,7 @@ export default function EmployeeInsights() {
       const res = await API.get("/employee/my-logs");
       const approved = res.data.logs.filter((l) => l.status === "approved");
       const sorted = approved.sort(
-        (a, b) => new Date(a.logDate) - new Date(b.logDate)
+        (a, b) => new Date(a.logDate) - new Date(b.logDate),
       );
       setLogs(sorted);
       await scoreLogs(sorted);
@@ -59,11 +57,33 @@ export default function EmployeeInsights() {
     for (let log of logsList) {
       const combinedText = `${log.tasks}. ${log.learnings}. ${log.challenges}.`;
 
+      try {
+        const res = await axios.post(`${ML_API}/score-log`, {
+          log_text: combinedText,
+        });
+
+        results.push({
+          date: new Date(log.logDate).toLocaleDateString("en-US", {
+            month: "short",
+            day: "numeric",
+          }),
+          fullDate: new Date(log.logDate).toLocaleDateString(),
+          score: res.data.score,
+          label:
+            res.data.label === 1
+              ? "Good"
+              : res.data.label === 0
+                ? "Neutral"
+                : "Bad",
+          rawLabel: res.data.label,
+        });
+      } catch (err) {
+        console.error("Scoring failed", err);
+      }
     }
 
     setChartData(results);
   };
-
 
   const CustomTooltip = ({ active, payload }) => {
     if (active && payload && payload.length) {
@@ -94,18 +114,24 @@ export default function EmployeeInsights() {
     return null;
   };
 
-
   const CustomDot = (props) => {
     const { cx, cy, payload } = props;
     const color =
       payload.label === "Good"
         ? "#22c55e"
         : payload.label === "Neutral"
-        ? "#facc15"
-        : "#ef4444";
+          ? "#facc15"
+          : "#ef4444";
 
     return (
-      <circle cx={cx} cy={cy} r={5} fill={color} stroke="#fff" strokeWidth={2} />
+      <circle
+        cx={cx}
+        cy={cy}
+        r={5}
+        fill={color}
+        stroke="#fff"
+        strokeWidth={2}
+      />
     );
   };
 
@@ -124,26 +150,23 @@ export default function EmployeeInsights() {
     <div className="p-6 space-y-6 mx-auto">
       {/* HEADER */}
       {/* Header Section */}
-        <div className="flex items-center gap-3 mb-4">
-          <div className="p-2 bg-blue-100 rounded-lg">
-            <TrendingUp className="w-6 h-6 text-blue-600" />
-          </div>
-          <div>
-            <h2 className="text-2xl font-bold text-gray-900">
-              Daily Productivity
-            </h2>
-            <p className="text-sm text-gray-600">
-              View your daily Productivity Insights
-            </p>
-          </div>
+      <div className="flex items-center gap-3 mb-4">
+        <div className="p-2 bg-blue-100 rounded-lg">
+          <TrendingUp className="w-6 h-6 text-blue-600" />
         </div>
-
+        <div>
+          <h2 className="text-2xl font-bold text-gray-900">
+            Daily Productivity
+          </h2>
+          <p className="text-sm text-gray-600">
+            View your daily Productivity Insights
+          </p>
+        </div>
+      </div>
 
       {/* CHARTS GRID */}
       <div className="grid grid-cols-1 gap-6">
-        {/* LINE CHART - Takes 2 columns */}
         <div className="bg-white p-6 rounded-xl">
-
           {chartData.length > 0 ? (
             <ResponsiveContainer width="100%" height={350}>
               <AreaChart data={chartData}>
