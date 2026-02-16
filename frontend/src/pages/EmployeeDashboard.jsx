@@ -5,6 +5,7 @@ import { CheckCircle2, Lightbulb, AlertTriangle, Clock1 } from "lucide-react";
 import { PlusCircle, RefreshCw, BarChart2, Clock } from "lucide-react";
 import DailyLog from "./DailyLog";
 import DailyLogHistory from "./DailyLogHistory";
+import EmployeeInsights from "./EmployeeInsights";
 
 const EmployeeDashboard = () => {
   const { logout } = useContext(AuthContext);
@@ -34,7 +35,6 @@ const EmployeeDashboard = () => {
 
   return (
     <div className="min-h-screen">
-      
       <header className="bg-white border-b border-gray-200 sticky top-0 z-10 shadow-sm">
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
@@ -53,7 +53,6 @@ const EmployeeDashboard = () => {
         </div>
       </header>
 
-      
       <div className="bg-white">
         <div className="max-w-7xl mx-auto px-6 py-8 text-center">
           <p className="text-4xl font-medium">
@@ -72,7 +71,6 @@ const EmployeeDashboard = () => {
         </div>
       </div>
 
-   
       <div className="max-w-7xl mx-auto px-6 py-6">
         <div className="flex items-center justify-center gap-2 mb-8 mt-1.5">
           {tabs.map((tab) => (
@@ -84,8 +82,8 @@ const EmployeeDashboard = () => {
                 activeTab === tab.id
                   ? "bg-white text-black shadow-md border-2 border-gray-500"
                   : tab.disabled
-                  ? "bg-white text-gray-400 border border-gray-200 cursor-not-allowed opacity-60"
-                  : "bg-white text-gray-700 border border-gray-200 hover:border-gray-300 hover:shadow-sm"
+                    ? "bg-white text-gray-400 border border-gray-200 cursor-not-allowed opacity-60"
+                    : "bg-white text-gray-700 border border-gray-200 hover:border-gray-300 hover:shadow-sm"
               }`}
             >
               <span className="text-sm">{tab.icon}</span>
@@ -99,17 +97,7 @@ const EmployeeDashboard = () => {
             <DailyLog onSubmitSuccess={() => setHasSubmittedToday(true)} />
           )}
           {activeTab === "history" && <DailyLogHistory />}
-          {activeTab === "insights" && (
-            <div className="text-center py-16">
-              <Lightbulb className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                Insights Coming Soon
-              </h3>
-              <p className="text-gray-500">
-                We're working on bringing you valuable insights.
-              </p>
-            </div>
-          )}
+          {activeTab === "insights" && <EmployeeInsights />}
           {activeTab === "analytics" && (
             <div className="text-center py-16">
               <AlertTriangle className="w-16 h-16 text-gray-300 mx-auto mb-4" />
